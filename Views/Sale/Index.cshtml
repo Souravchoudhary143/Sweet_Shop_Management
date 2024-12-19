@@ -1,0 +1,173 @@
+﻿@model IEnumerable<Sweet_Shop_Management.Models.Sale>
+
+<style>
+    .month-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background-color: #f7f7f7;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .month-input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+        }
+
+    #decorativeCanvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: -1; /* Keep canvas behind the input */
+        border-radius: 8px;
+    }
+
+    #monthDropdownContainer {
+        position: relative;
+        display: inline-block;
+        width: 200px;
+    }
+</style>
+
+@* Search Section *@
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <div class="input-group m-2 p-2">
+            <div class="col-4">
+                <select id="searchOption" class="form-control">
+                    <option value="Search By" selected disabled>Search By</option>
+                    <option value="All">All</option>
+                    <option value="ItemName">Item Name</option>
+                    <option value="Month">Month</option>
+                    <option value="Date">Date</option>
+                </select>
+            </div>
+            <div class="col-4" id="textInputContainer">
+                <input type="text" id="searchKeyword" class="form-control" placeholder="Enter keyword...">
+            </div>
+
+            <div class="col-4" id="itemNameContainer" style="display:none;">
+                <select id="itemNameDropdown" class="form-control">
+                    <option value="" selected disabled>Select Item Name</option>
+                    @foreach (var item in ViewBag.SweetItems as List<SweetItem>)
+                    {
+                        <option value="@item.ItemName">@item.ItemName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4" id="monthDropdownContainer" style="display:none;">
+                <input type="month" id="monthDropdown" class="form-control month-input" value="2024-12" min="2000" max="" />
+            </div>
+
+            <div class="col-4" id="datePickerContainer" style="display:none;">
+                <input type="text" id="searchDate" class="form-control" placeholder="Select Date" />
+            </div>
+
+            <div class="col-4" id="yearDropdownContainer" style="display:none;">
+                <input type="number" id="yearDropdown" class="form-control" value="2024" min="2000" max="2024" />
+            </div>
+
+            <div class="col-2">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-primary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button id="resetButton" class="btn btn-secondary" type="button">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h3>All Sales</h3>
+    <a asp-action="Create" class="btn btn-success mb-3">Add Sale</a>
+    <table class="table table-bordered table-hover" id="tblData">
+        <thead>
+            <tr class="table-active table-hover">
+                <th>Sweet Item</th>
+                <th>Quantity Sold</th>
+                <th>Remaining Quantity</th>
+                <th>Sale Price per Unit</th>
+                <th>Discount</th>
+                <th>Cost Price per Unit</th>
+                <th>Profit After Discount</th>
+                <th>Sale Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sale in Model)
+            {
+                <tr class="sale-row" data-itemname="@sale.SweetItem.ItemName" data-month="@sale.SaleDate.ToString("yyyy-MM")" data-saledate="@sale.SaleDate.ToString("yyyy-MM-dd")" data-saleitemname="@sale.SweetItem.ItemName">
+                    <td>@sale.SweetItem.ItemName</td>
+                    <td>
+                    @if (sale.Unit == "Gram")
+                    {
+                        @($"{sale.QuantitySold * 1000} Gram")
+                    }
+                    else
+                    {
+                        @($"{sale.QuantitySold} {sale.Unit}")
+                    }
+                    </td>
+                    <td>@sale.RemainingQuantity @sale.SweetItem.Unit</td>
+                    <td>@sale.SalePrice @sale.Currency</td>
+                    <td>@sale.Discount %</td>
+                    <td>@sale.CostPrice @sale.SweetItem.Currency</td>
+                    <td>@sale.Profit</td>
+                    <td>@sale.SaleDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @* Total Items Sold *@
+    <div id="totalItemsSold" class="alert alert-info" style="display:none;">
+        <strong>Total Items Sold: </strong> <span id="totalSoldCount">0</span>
+        <strong>Total Quantity Sold: </strong> <span id="totalQuantitySold">0</span>
+    </div>
+    <div id="noItemsMessage" class="alert alert-warning" style="display:none;">
+        <strong>No items sold!</strong> Your search did not match any records.
+    </div>
+    <div id="paginationControls">
+        <button id="prevPage" class="btn btn-secondary">Previous</button>
+        <span id="pageNumber">Page 1</span>
+        <button id="nextPage" class="btn btn-secondary">Next</button>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="~/js/sale/sale.js"></script> @* In this file we have searching sorting and pagination *@
+
+    <script>
+        // In the search bar after selcting the month option the the future month or year should not apear
+        document.addEventListener("DOMContentLoaded", function () {
+            var today = new Date();
+            var currentYear = today.getFullYear();
+            var currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
+            var currentDate = currentYear + '-' + currentMonth;
+            document.getElementById('monthDropdown').setAttribute('max', currentDate);
+            document.getElementById('monthDropdown').setAttribute('min', '2000-12');
+        });
+    </script>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            var currentYear = new Date().getFullYear();
+            var yearInput = document.getElementById("yearDropdown");
+            yearInput.setAttribute("min", "2000");
+            yearInput.setAttribute("max", currentYear); 
+            yearInput.value = currentYear;
+        });
+
+    </script>
+}
+

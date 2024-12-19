@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Sweet_Shop_Management.Models.ProductCategory>
+
+<h2>Product Categories</h2>
+
+<p>
+    <a asp-controller="Category" asp-action="Create">Add New Category</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Category Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Category</td>
+                <td>
+                    <a asp-controller="Category" asp-action="Edit" asp-route-id="@category.Id" class="btn btn-warning btn-sm">Edit</a> |
+                    <a asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

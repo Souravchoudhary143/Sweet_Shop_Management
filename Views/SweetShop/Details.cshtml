@@ -1,0 +1,17 @@
+﻿@model Sweet_Shop_Management.Models.SweetItem
+
+<div class="container mt-4">
+    <h2>@Model.ItemName Details</h2>
+    <div class="card shadow-sm mt-4" style="max-width: 600px; margin: auto;">
+        <div class="card-body">
+            <h5 class="card-title">@Model.ItemName</h5>
+            <p><strong>Price per Kg:</strong> @Model.Price.ToString("C")</p>
+            <p><strong>Total Quantity:</strong> @Model.TotalQuantity @Model.Unit</p>
+        </div>
+        <div class="card-footer text-center">
+            <a asp-controller="SweetShop" asp-action="Index" class="btn btn-primary" style="text-decoration: none; padding: 10px 20px; border-radius: 5px; background-color: #007bff; color: white; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                ← Back to List
+            </a>
+        </div>
+    </div>
+</div>

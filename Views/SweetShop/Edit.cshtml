@@ -1,0 +1,86 @@
+﻿@model Sweet_Shop_Management.Models.SweetItem
+
+<div class="container mt-4">
+    <div class="card shadow-lg" style="width: 700px;">
+        <div class="card-header bg-primary text-white">
+            <h4>Edit Sweet Item</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Item Name -->
+                <div class="form-group mb-3">
+                    <label asp-for="ItemName" class="form-label">Sweet Item Name</label>
+                    <input asp-for="ItemName" class="form-control" placeholder="Enter Sweet Item Name" />
+                    <span asp-validation-for="ItemName" class="text-danger"></span>
+                </div>
+
+                <!-- Price per Kg -->
+                <div class="form-group">
+                    <label class="form-label">Price per Unit</label>
+                    <div class="d-flex">
+                        <input asp-for="Price" class="form-control" id="price" placeholder="Enter the price per unit" />
+                        <select asp-for="Currency" class="form-control ms-2" style="width: 80px;" id="currency">
+                            <option value="INR">INR (₹)</option>
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <!-- Total Quantity -->
+                <div class="form-group mb-3">
+                    <label class="form-label">Total Quantity</label>
+                    <div class="d-flex">
+                        <input asp-for="TotalQuantity" class="form-control" id="quantity" placeholder="Enter total quantity" />
+                        <select asp-for="Unit" class="form-control ms-2" style="width: 100px;" id="unit">
+                            <option value="" disabled selected>Unit</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Gram">Gram</option>
+                            <option value="Liter">Liter</option>
+                            <option value="Liter">ml</option>
+                            <option value="Peices">Peices</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Unit" class="text-danger"></span>
+                    <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+                </div>
+
+                <!-- Final Cost -->
+                <div class="form-group mb-3">
+                    <label asp-for="FinalCost" class="form-label">Final Cost</label>
+                    <input asp-for="FinalCost" class="form-control" id="finalCost" readonly placeholder="Calculated Final Cost" />
+                </div>
+                <!-- Product Category Dropdown -->
+                <div class="form-group">
+                    <label class="form-label">Product Category</label>
+                    <select asp-for="ProductCategory" class="form-control" id="productCategory">
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Sweets">Sweets</option>
+                    </select>
+                    <span asp-validation-for="ProductCategory" class="text-danger"></span>
+                </div>
+
+                <!-- Save Button and Cancel Link -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+        <script src="~/js/sweet/sweet.js"></script>  /* used for real-Time price conversion */
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
