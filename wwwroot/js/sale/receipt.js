@@ -55,7 +55,7 @@ $(document).ready(function () {
             // Automatically submit the form after the print click
             setTimeout(function () {
                 $('#saleForm')[0].submit(); 
-            }, 5000); 
+            }, 4000); 
         });
 
         $('#closeReceipt').off('click').on('click', function () {

@@ -117,7 +117,7 @@ $(document).ready(function () {
         $('#searchKeyword').val('');
         $('#monthDropdown').val('');
         $('#monthDropdownContainer').hide();
-        $('#textInputContainer').show();
+        $('#textInputContainer').hide();
         $('#datePickerContainer').hide(); 
         $('#itemNameContainer').hide(); 
 
@@ -125,7 +125,9 @@ $(document).ready(function () {
         $('#totalSoldCount').text(0);
         $('#totalItemsSold').hide();
         $('#noItemsMessage').hide();
-        filteredRows = allRows.slice(); // Show all rows and reset filteredRows
+        filteredRows = allRows.slice(); 
+        showPage(1); 
+        updatePaginationControls(); 
     });
 
     // previous button click

@@ -38,14 +38,14 @@
         <div class="input-group m-2 p-2">
             <div class="col-4">
                 <select id="searchOption" class="form-control">
-@*                     <option value="Search By" selected disabled>Search By</option>
- *@                    <option value="All">All</option>
+                    <option value="Search By" selected disabled>Search By</option>
+                    <option value="All">All</option>
                     <option value="ItemName">Item Name</option>
                     <option value="Month">Month</option>
                     <option value="Date">Date</option>
                 </select>
             </div>
-            <div class="col-4" id="textInputContainer">
+            <div class="col-4" id="textInputContainer" style="display: none;">
                 <input type="text" id="searchKeyword" class="form-control" placeholder="Enter keyword...">
             </div>
 
@@ -113,7 +113,7 @@
                     }
                     else
                     {
-                        @($"{sale.QuantitySold} {sale.Unit}")
+                        @($"{sale.QuantitySold} {sale.Unit}")   @* we need to do this because in database the gram is saved Kg after conversion from gram to kg *@ 
                     }
                     </td>
                     <td>@sale.RemainingQuantity @sale.SweetItem.Unit</td>
@@ -167,7 +167,6 @@
             yearInput.setAttribute("max", currentYear); 
             yearInput.value = currentYear;
         });
-
     </script>
 }
 
