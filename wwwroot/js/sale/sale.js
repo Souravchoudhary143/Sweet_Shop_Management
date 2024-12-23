@@ -64,11 +64,14 @@ $(document).ready(function () {
             var saleMonth = $(this).data('month') ? $(this).data('month').toString() : '';
             const saleDate = $(this).data('saledate');
             var quantitySold = parseInt($(this).find('td:nth-child(2)').text()) || 0;
+            var unit = $(this).data('unit') ? $(this).data('unit').toLowerCase() : '';
+            var currency = $(this).data('currency') ? $(this).data('currency').toLowerCase() : '';
+            var discount = $(this).data('discount') ? $(this).data('discount').toString() : '';
 
             var isVisible = false;
 
             if (searchOption === 'All') {
-                isVisible = (itemName.includes(keyword) || saleMonth === keyword) && (selectedItemName ? itemName === selectedItemName : true);
+                isVisible = (itemName.includes(keyword) || saleMonth === keyword || unit.includes(keyword) || currency.includes(keyword) || discount.includes(keyword)) && (selectedItemName ? itemName === selectedItemName : true);
             } else if (searchOption === 'ItemName') {
                 isVisible = itemName.includes(keyword) && (selectedItemName ? itemName === selectedItemName : true);
             } else if (searchOption === 'Month') {
@@ -220,3 +223,22 @@ $(document).ready(function () {
 });
 
 
+// In the search bar after selcting the month option the future month or year should not appear
+$(document).ready(function () {
+    var today = new Date();
+    var currentYear = today.getFullYear();
+    var currentMonth = (today.getMonth() + 1).toString().padStart(2, '0');
+    var currentDate = currentYear + '-' + currentMonth;
+
+    $('#monthDropdown').attr('max', currentDate);
+    $('#monthDropdown').attr('min', '2000-12');
+});
+
+// In the search bar after selcting the yearContainer option the future year should not appear
+$(document).ready(function () {
+    var currentYear = new Date().getFullYear();
+    var yearInput = $("#yearDropdown");
+    yearInput.attr("min", "2000");
+    yearInput.attr("max", currentYear);
+    yearInput.val(currentYear);
+});

@@ -86,10 +86,10 @@
 </div>
 
 <div class="container">
-    <h3>All Sales Record</h3>
-    <a asp-action="Create" class="btn btn-success mb-3">
+    <a asp-action="Create" class="btn btn-outline-success mb-3" fdprocessedid="5qoqqc">
         <i class="fas fa-plus m-2"></i> &nbsp;Add Sale
     </a>
+    <h3>All Sales Record</h3>
     <table class="table table-bordered table-hover" id="tblData">
         <thead>
             <tr class="table-active table-hover">
@@ -106,7 +106,8 @@
         <tbody>
             @foreach (var sale in Model)
             {
-                <tr class="sale-row" data-itemname="@sale.SweetItem.ItemName" data-month="@sale.SaleDate.ToString("yyyy-MM")" data-saledate="@sale.SaleDate.ToString("yyyy-MM-dd")" data-saleitemname="@sale.SweetItem.ItemName">
+                <tr class="sale-row" data-itemname="@sale.SweetItem.ItemName" data-month="@sale.SaleDate.ToString("yyyy-MM")" data-saledate="@sale.SaleDate.ToString("yyyy-MM-dd")"
+                    data-saleitemname="@sale.SweetItem.ItemName" data-unit="@sale.Unit" data-currency="@sale.Currency" data-discount="@sale.Discount" data-price="@sale.SalePrice">
                     <td>@sale.SweetItem.ItemName</td>
                     <td>
                     @if (sale.Unit == "Gram")
@@ -115,7 +116,7 @@
                     }
                     else
                     {
-                        @($"{sale.QuantitySold} {sale.Unit}")   @* we need to do this because in database the gram is saved Kg after conversion from gram to kg *@ 
+                        @($"{sale.QuantitySold} {sale.Unit}")   @* we need to do this because in database the gram is saved as Kg after conversion from gram to kg *@ 
                     }
                     </td>
                     <td>@sale.RemainingQuantity @sale.SweetItem.Unit</td>
@@ -148,27 +149,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="~/js/sale/sale.js"></script> @* In this file we have searching sorting and pagination *@
-
-    <script>
-        // In the search bar after selcting the month option the the future month or year should not apear
-        document.addEventListener("DOMContentLoaded", function () {
-            var today = new Date();
-            var currentYear = today.getFullYear();
-            var currentMonth = String(today.getMonth() + 1).padStart(2, '0'); 
-            var currentDate = currentYear + '-' + currentMonth;
-            document.getElementById('monthDropdown').setAttribute('max', currentDate);
-            document.getElementById('monthDropdown').setAttribute('min', '2000-12');
-        });
-    </script>
-
-    <script>
-            document.addEventListener("DOMContentLoaded", function () {
-            var currentYear = new Date().getFullYear();
-            var yearInput = document.getElementById("yearDropdown");
-            yearInput.setAttribute("min", "2000");
-            yearInput.setAttribute("max", currentYear); 
-            yearInput.value = currentYear;
-        });
-    </script>
 }
 

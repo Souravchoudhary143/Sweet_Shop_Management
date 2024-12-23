@@ -1,11 +1,27 @@
 ﻿@model Sweet_Shop_Management.Models.ProductCategory
 
-<h2>Delete Product Category</h2>
+@{
+    ViewData["Title"] = "Delete Category";
+}
 
-<h3>Are you sure you want to delete the category "@Model.Category"?</h3>
+<div class="card shadow-sm p-4 m-4">
+    <div class="card-header bg-danger text-white">
+        <h5>Delete Category</h5>
+    </div>
+    <div class="card-body" style="max-width: 400px;">
+        <h3 class="m-2 p-2">Are you sure you want to delete the category "<strong>@Model.Category</strong>"?</h3>
 
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="@Url.Action("Index", "Category")" class="btn btn-secondary">Cancel</a>
-</form>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="modal-body">
+                <p>Once deleted, this action cannot be undone.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="@Url.Action("Index", "Category")" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

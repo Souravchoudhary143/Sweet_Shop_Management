@@ -17,9 +17,9 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Price</th> 
+            <th>Cost Price</th> 
             <th>Total Quantity</th> 
-            <th>Final Cost</th>
+            @* <th>Final Cost</th> *@
             <th>Product Category</th>
             <th>Actions</th>
         </tr>
@@ -31,7 +31,7 @@
                 <td>@item.ItemName</td>
                 <td>@($"{item.Price} {item.Currency}")</td>
                 <td>@($"{item.TotalQuantity} {item.Unit}")</td>
-                <td>@($"{item.FinalCost} {item.Currency}")</td>
+               @*  <td>@($"{item.FinalCost} {item.Currency}")</td> *@
                 <td>@item.ProductCategory</td>
 @*<td>@(item.ProductCategory != null ? item.ProductCategory.Category : "No Category")</td> *@
                     <td>
@@ -93,6 +93,6 @@
 
 
 @section Scripts {
-    <script src="~/js/sweet/dataTable.js"></script> 
+    <script src="~/js/sweet/dataTable.js"></script>  @* Under this file we have the logic of datatable and also the functionality to add qantity *@
 }
 

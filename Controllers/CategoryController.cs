@@ -42,19 +42,25 @@ namespace Sweet_Shop_Management.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
+                var productCategory = await _context.ProductCategories
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productCategory == null)
+                {
+                    return NotFound();
+                }
 
-            var productCategory = await _context.ProductCategories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (productCategory == null)
+                return View(productCategory);
+            }
+            catch(Exception ex)
             {
-                return NotFound();
+                throw ex;
             }
-
-            return View(productCategory);
         }
 
         private bool ProductCategoryExists(int id)
@@ -67,18 +73,25 @@ namespace Sweet_Shop_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Category")] ProductCategory productCategory)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(productCategory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(productCategory);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(productCategory);
             }
-            return View(productCategory);
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Category")] ProductCategory productCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Category")] ProductCategory productCategory)  // it restricts the model binding to only the specified properties, improving security and preventing over-posting attacks.
         {
             if (id != productCategory.Id)
             {
@@ -110,15 +123,22 @@ namespace Sweet_Shop_Management.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var productCategory = await _context.ProductCategories.FindAsync(id);
-            if (productCategory != null)
+            try
             {
-                _context.ProductCategories.Remove(productCategory);
-                await _context.SaveChangesAsync();
+                var productCategory = await _context.ProductCategories.FindAsync(id);
+                if (productCategory != null)
+                {
+                    _context.ProductCategories.Remove(productCategory);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
     }

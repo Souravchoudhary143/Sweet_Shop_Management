@@ -1,13 +1,13 @@
 ﻿@model Sweet_Shop_Management.Models.SaleViewModel
 
 <div class="container mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
+    <div class="card shadow-lg" id="formsContainer">
+        <div class="card-header bg-primary text-white d-flex justify-content-between">
             <h4 class="mb-0">Record a Sale</h4>
         </div>
         <div class="card-body">
             <form asp-action="Create" method="post" id="saleForm">
-                <div class="form-group">
+                 <div class="form-group">
                     <label asp-for="SweetItemId">Select Sweet Item</label>
                     <select asp-for="SweetItemId" class="form-control" id="sweetItemId">
                         <option value="">-- Select --</option>
@@ -19,7 +19,7 @@
                         }
                     </select>
                     <span asp-validation-for="SweetItemId" class="text-danger"></span>
-                </div>
+                </div> 
 
                 <div class="form-group">
                     <label asp-for="QuantitySold">Quantity Sold</label>
@@ -99,7 +99,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" id="receiptModalBody">
-                            <!-- Receipt content will be dynamically injected here -->
+                            
                         </div>
                         <div class="modal-footer">
                             <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
@@ -112,7 +112,6 @@
             </div>
         </div>
     </div>
-</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

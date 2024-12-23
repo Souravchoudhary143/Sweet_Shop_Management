@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sweet_Shop_Management.Data;
 using Sweet_Shop_Management.Models;
+using Sweet_Shop_Management.Models.ViewModel;
 using Sweet_Shop_Management.Models.ViewModels;
 using Sweet_Shop_Management.Repository;
 using Sweet_Shop_Management.Repository.IRepository;
@@ -54,7 +55,25 @@ namespace Sweet_Shop_Management.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            try
+            {
+                // Fetch categories directly from the database
+                var categories = _context.ProductCategories 
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Category,
+                        Text = c.Category
+                    })
+                    .ToList();
+                ViewBag.ProductCategoryList = categories;
+
+                return View(new SweetItem());
+                // return View();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IActionResult> GetSweetItems()
@@ -88,23 +107,28 @@ namespace Sweet_Shop_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SweetItem sweetItem)
+        public IActionResult Create(SweetItem model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _unitOfWork.SweetItem.CreateAsync(sweetItem);
-                    await _unitOfWork.SaveAsync();
-                    return RedirectToAction(nameof(Index));
+                    _context.SweetItems.Add(model);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
                 }
+                // If invalid, repopulate categories
+                ViewBag.ProductCategoryList = _context.ProductCategories.Select(c => new SelectListItem
+                {
+                    Value = c.Category,
+                    Text = c.Category
+                }).ToList();
 
-                return View(sweetItem);
+                return View(model);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-                return View(sweetItem);
+                throw ex;
             }
         }
 
@@ -129,6 +153,15 @@ namespace Sweet_Shop_Management.Controllers
         {
             try
             {
+                // Fetch categories directly from the database
+                var categories = _context.ProductCategories
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Category,
+                        Text = c.Category
+                    })
+                    .ToList();
+                ViewBag.ProductCategoryList = categories;
                 var sweetItem = await _unitOfWork.SweetItem.GetByIdAsync(id);
                 if (sweetItem == null)
                 {

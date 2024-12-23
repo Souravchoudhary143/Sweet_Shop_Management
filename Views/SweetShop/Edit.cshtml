@@ -58,9 +58,17 @@
                     <label class="form-label">Product Category</label>
                     <select asp-for="ProductCategory" class="form-control" id="productCategory">
                         <option value="" disabled selected>Select a category</option>
-                        <option value="Snacks">Snacks</option>
-                        <option value="Drink">Drink</option>
-                        <option value="Sweets">Sweets</option>
+                        @if (ViewBag.ProductCategoryList != null)
+                        {
+                            foreach (var category in ViewBag.ProductCategoryList as List<SelectListItem>)
+                            {
+                                <option value="@category.Value">@category.Text</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="" disabled>No categories available</option>
+                        }
                     </select>
                     <span asp-validation-for="ProductCategory" class="text-danger"></span>
                 </div>

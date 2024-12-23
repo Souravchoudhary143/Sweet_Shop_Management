@@ -1,20 +1,31 @@
 ﻿// Real-time calculation of the final cost pirce unit * quantity
-document.getElementById("quantity").addEventListener("input", calculateFinalCost);
-document.getElementById("unit").addEventListener("change", calculateFinalCost);
+$(document).ready(function () {
+    $("#quantity").on("input", calculateFinalCost);
+    $("#unit").on("change", calculateFinalCost);
+    function calculateFinalCost() {
+        const pricePerKg = parseFloat($("#price").val()) || 0;
+        const quantity = parseFloat($("#quantity").val()) || 0;
+        const unit = $("#unit").val();
 
-function calculateFinalCost() {
-    const pricePerKg = parseFloat(document.getElementById("price").value) || 0;
-    const quantity = parseFloat(document.getElementById("quantity").value) || 0;
-    const unit = document.getElementById("unit").value;
+        let finalQuantity = quantity;
+        if (unit === "Gram") {
+            finalQuantity = quantity / 1000;
+        }
+        else if (unit === "ml") {
+            finalQuantity = quantity * 0.001;
+        }
 
-    let finalQuantity = quantity;
-    if (unit === "Gram") {
-        finalQuantity = quantity / 1000; // Convert grams to kilograms
+        const finalCost = (finalQuantity * pricePerKg).toFixed(2);
+        $("#finalCost").val(finalCost); // Update the Final Cost field
     }
-    else if (unit === "ml") {
-        finalQuantity = quantity * 0.001; //convert ml to liter
-    }
-    const finalCost = (finalQuantity * pricePerKg).toFixed(2);
-    document.getElementById("finalCost").value = finalCost;
-}
+
+    // Trigger validation on submit
+    $("form").submit(function (e) {
+        var isValid = true;
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+});
+
 

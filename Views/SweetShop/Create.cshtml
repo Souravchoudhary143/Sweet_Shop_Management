@@ -9,31 +9,25 @@
             <span asp-validation-for="ItemName" class="text-danger"></span>
         </div>
 
-       @*  <div class="form-group">
-            <label asp-for="Price" class="form-label">Price per Unit</label>
-            <div class="d-flex flex-column">
-                <input asp-for="Price" class="form-control" id="price" placeholder="Enter the price per kilogram" />
-            </div>
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div> *@
-
         <div class="form-group">
             <label class="form-label">Price per Unit</label>
             <div class="d-flex">
-                <input asp-for="Price" class="form-control" id="price" placeholder="Enter the price per unit" />
+                <input asp-for="Price" class="form-control" id="price" placeholder="Enter the price per unit" value="" type="number" step="0.01"/>
                 <select asp-for="Currency" class="form-control ms-2" style="width: 80px;" id="currency">
+                    <option value="" disabled selected>Currency</option>
                     <option value="INR">INR (₹)</option>
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
                 </select>
             </div>
             <span asp-validation-for="Price" class="text-danger"></span>
+            <span asp-validation-for="Currency" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label class="form-label">Total Quantity</label>
             <div class="d-flex">
-                <input asp-for="TotalQuantity" class="form-control" id="quantity" placeholder="Enter total quantity" />
+                <input asp-for="TotalQuantity" class="form-control" id="quantity" placeholder="Enter total quantity" value="" type="number" step="0.001" />
                 <select asp-for="Unit" class="form-control ms-2" style="width: 80px;" id="unit">
                     <option value="" disabled selected>Unit</option>
                     <option value="Kg">Kg</option>
@@ -42,29 +36,29 @@
                     <option value="Peices">Peices</option>
                 </select>
             </div>
-            <span asp-validation-for="Unit" class="text-danger"></span>
             <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+            <span asp-validation-for="Unit" class="text-danger"></span>
         </div>
 
         <!-- Product Category Dropdown -->
-       <div class="form-group">
+           <div class="form-group">
             <label class="form-label">Product Category</label>
             <select asp-for="ProductCategory" class="form-control" id="productCategory">
                 <option value="" disabled selected>Select a category</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Drink">Drink</option>
-                <option value="Sweets">Sweets</option>
+                @if (ViewBag.ProductCategoryList != null)
+                {
+                    foreach (var category in ViewBag.ProductCategoryList as List<SelectListItem>)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                }
+                else
+                {
+                    <option value="" disabled>No categories available</option>
+                }
             </select>
             <span asp-validation-for="ProductCategory" class="text-danger"></span>
-        </div> 
-
-       @* <div class="form-group">
-            <label asp-for="SweetItem.ProductCategoryId" class="form-label">Product Category</label>
-            <select asp-for="SweetItem.ProductCategoryId" asp-items="Model.ProductCategoryList" class="form-control">
-                <option value="">Select Category</option>
-            </select>
-            <span asp-validation-for="SweetItem.ProductCategoryId" class="text-danger"></span>
-        </div>  *@
+        </div>
 
         <div class="form-group">
             <label asp-for="FinalCost" class="form-label">Final Cost</label>
@@ -82,3 +76,4 @@
     <script src="~/js/sweet/sweet.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }
+  
