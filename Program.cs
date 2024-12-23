@@ -34,6 +34,15 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
+//Useed to store the Seeded Users
+using (var scope = app.Services.CreateScope()) 
+{
+    var services = scope.ServiceProvider;
+
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await ApplicationDbInitializer.SeedUsersFromJsonAsync(userManager, roleManager); //Seed class or method will be called here 
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -59,3 +68,4 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+

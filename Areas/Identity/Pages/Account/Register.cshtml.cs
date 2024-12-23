@@ -121,6 +121,16 @@ namespace Sweet_Shop_Management.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            //Add Roles
+            Input = new InputModel()
+            {
+                RoleList = _roleManager.Roles.Where(r => r.Name != Utility.Role_Individual)
+                .Select(r => r.Name).Select(rl => new SelectListItem()
+                {
+                    Text = rl,
+                    Value = rl
+                })
+            };
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -187,10 +197,10 @@ namespace Sweet_Shop_Management.Areas.Identity.Pages.Account
 
                     //admin role Assign
                    // await _userManager.AddToRoleAsync(user, Utility.Role_Admin); //comment after adding one role of admin
-
+                   //Here every user will we an Admin User if No any other role is selected 
                     if (Input.Role == null)
                     {
-                        await _userManager.AddToRoleAsync(user, Utility.Role_Individual);
+                        await _userManager.AddToRoleAsync(user, Utility.Role_Admin);
                     }
                     else
                     {

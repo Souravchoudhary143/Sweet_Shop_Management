@@ -1,0 +1,22 @@
+[
+  {
+    "UserName": "admin1234@gmail.com",
+    "Email": "admin1234@gmail.com",
+    "Password": "Admin@1234",
+    "Role": "Admin",
+    "Name": "Admin User1234",
+    "City": "New York",
+    "State": "NY",
+    "PostalCode": "10001"
+  },
+  {
+    "UserName": "user123@gmai.com",
+    "Email": "user123@gmai.com",
+    "Password": "User@123",
+    "Role": "Individual User",
+    "Name": "User One",
+    "City": "Los Angeles",
+    "State": "CA",
+    "PostalCode": "90001"
+  }
+]

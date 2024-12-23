@@ -103,12 +103,11 @@
                             <label for="confirmPassword">Confirm Password</label>
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                         </div>
-
                         @if (User.IsInRole(Utility.Role_Admin))
                         {
                             <div class="form-floating mb-3">
                                 <select asp-for="Input.Role" class="form-control" asp-items="Model.Input.RoleList" id="role">
-                                    <option value="">Select Role</option>
+                                    <option value="" selected disabled>Select Role</option>
                                 </select>
                                 <label for="role">Role</label>
                                 <span asp-validation-for="Input.Role" class="text-danger"></span>
@@ -125,9 +124,10 @@
     </div>
 </div>
 
+
     <div class="col-md-6 col-md-offset-2">
-        <section>@* 
-            <h3>Use another service to register.</h3> *@
+        <section>
+            @* <h3>Use another service to register.</h3> *@ 
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
