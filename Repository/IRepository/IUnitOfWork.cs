@@ -4,6 +4,8 @@
     {
         ISweetItemRepository SweetItem { get; }
         ISaleRepository Sale { get; }
+
+        Task<int> CompleteAsync();
         Task SaveAsync();
     }
 }

@@ -17,6 +17,10 @@ namespace Sweet_Shop_Management.Repository
 
         public ISaleRepository Sale {  get; set; }
 
+        public async Task<int> CompleteAsync()
+        {
+            return await _context.SaveChangesAsync(); // Automatically commits all changes
+        }
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
