@@ -12,7 +12,7 @@ using Sweet_Shop_Management.Repository.IRepository;
 
 namespace Sweet_Shop_Management.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class SweetShopController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -138,7 +138,13 @@ namespace Sweet_Shop_Management.Controllers
         {
             try
             {
-                var item = _unitOfWork.SweetItem.GetByIdAsync(id);
+                var item = await _unitOfWork.SweetItem.GetByIdAsync(id);
+
+                if (item == null)
+                {
+                    return NotFound();
+                }
+
                 await _unitOfWork.SweetItem.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }

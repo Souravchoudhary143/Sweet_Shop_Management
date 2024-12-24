@@ -5,7 +5,7 @@ using Sweet_Shop_Management.Repository.IRepository;
 
 namespace Sweet_Shop_Management.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class SaleController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -71,68 +71,82 @@ namespace Sweet_Shop_Management.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SaleViewModel saleViewModel)
+        public async Task<IActionResult> Create(List<SaleViewModel> saleViewModels)
         {
             try
             {
-                var sweetItem = await _unitOfWork.SweetItem.GetByIdAsync(saleViewModel.SweetItemId);
-                if (sweetItem == null)
+                foreach (var saleViewModel in saleViewModels)
                 {
-                    ModelState.AddModelError("", "Sweet item not found.");
-                    return RedirectToAction(nameof(Create));
-                }
-                var quantitySold = saleViewModel.QuantitySold;
-                var availableQuantity = sweetItem.TotalQuantity;
-                var availableUnit = sweetItem.Unit;
-                var discount = saleViewModel.Discount ?? 0;
+                    var sweetItem = await _unitOfWork.SweetItem.GetByIdAsync(saleViewModel.SweetItemId);
+                    if (sweetItem == null)
+                    {
+                        ModelState.AddModelError("", $"Sweet item with ID {saleViewModel.SweetItemId} not found.");
+                        return View(saleViewModels);
+                    }
 
-                string selectedCurrency = saleViewModel.Currency ?? "INR";
-                if (saleViewModel.Unit == "Gram" && availableUnit == "Kg")
-                {
-                    quantitySold /= 1000;
+                    var quantitySold = saleViewModel.QuantitySold;
+                    var availableQuantity = sweetItem.TotalQuantity;
+                    var availableUnit = sweetItem.Unit;
+                    var discount = saleViewModel.Discount ?? 0;
+
+                    string selectedCurrency = saleViewModel.Currency ?? "INR";
+                    if (saleViewModel.Unit == "Gram" && availableUnit == "Kg")
+                    {
+                        quantitySold /= 1000;
+                    }
+                    else if (saleViewModel.Unit == "Kg" && availableUnit == "Gram")
+                    {
+                        quantitySold *= 1000;
+                    }
+
+                    if (quantitySold > availableQuantity)
+                    {
+                        ModelState.AddModelError("QuantitySold", "The quantity sold cannot exceed the total available quantity.");
+                        return View(saleViewModels);
+                    }
+
+                    sweetItem.TotalQuantity -= quantitySold;
+                    sweetItem.TotalSellQuantity += quantitySold;
+
+                    // Calculate the profit, considering the discount if provided
+                    decimal salePrice = (decimal)saleViewModel.SalePrice;
+                    if (saleViewModel.Discount.HasValue)
+                    {
+                        decimal discountAmount = (saleViewModel.Discount.Value / 100) * salePrice;
+                        salePrice -= discountAmount;
+                    }
+
+                    var sale = new Sale
+                    {
+                        SweetItemId = saleViewModel.SweetItemId,
+                        QuantitySold = quantitySold,
+                        SalePrice = saleViewModel.SalePrice,
+                        SaleDate = DateTime.Now,
+                        RemainingQuantity = sweetItem.TotalQuantity,
+                        Unit = saleViewModel.Unit ?? availableUnit,
+                        Currency = selectedCurrency,
+                        CostPrice = sweetItem.Price,
+                        Profit = (saleViewModel.SalePrice - sweetItem.Price) * quantitySold,
+                        Discount = discount
+                    };
+
+                    await _unitOfWork.Sale.AddSaleAsync(sale);
+                    await _unitOfWork.SweetItem.UpdateAsync(sweetItem);
                 }
-                else if (saleViewModel.Unit == "Kg" && availableUnit == "Gram")
-                {
-                    quantitySold *= 1000;
-                }
-                if (quantitySold > availableQuantity)
-                {
-                    ModelState.AddModelError("QuantitySold", "The quantity sold cannot exceed the total available quantity.");
-                    return View(saleViewModel);
-                }
-                sweetItem.TotalQuantity -= quantitySold;
-                sweetItem.TotalSellQuantity += quantitySold;
-                //// Calculate the profit, considering the discount if provided
-                decimal salePrice = (decimal)saleViewModel.SalePrice;
-                if (saleViewModel.Discount.HasValue)
-                {
-                    // Apply discount as a percentage
-                    decimal discountAmount = (saleViewModel.Discount.Value / 100) * salePrice;
-                    salePrice -= discountAmount;
-                }
-                var sale = new Sale
-                {
-                    SweetItemId = saleViewModel.SweetItemId,
-                    QuantitySold = quantitySold,
-                    SalePrice = saleViewModel.SalePrice,
-                    SaleDate = DateTime.Now,
-                    RemainingQuantity = sweetItem.TotalQuantity,
-                    Unit = saleViewModel.Unit ?? availableUnit,
-                    Currency = selectedCurrency,
-                    CostPrice = sweetItem.Price,
-                    Profit = (saleViewModel.SalePrice - sweetItem.Price) * quantitySold,
-                    Discount = discount
-                };
-                await _unitOfWork.Sale.AddSaleAsync(sale);
-                await _unitOfWork.SweetItem.UpdateAsync(sweetItem);
+
+                // Save all changes to the database
+                await _unitOfWork.CompleteAsync(); // Commit all changes automatically
+
                 return RedirectToAction(nameof(Index));
             }
-
             catch (Exception ex)
             {
-                throw ex;
+                ModelState.AddModelError("", "An error occurred while processing the sale. Please try again.");
+                return View(saleViewModels);
             }
         }
+
+
         [HttpGet]
         public async Task<IActionResult> GetCostPrice(int sweetItemId)
         {

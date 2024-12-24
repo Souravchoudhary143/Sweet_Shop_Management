@@ -1,146 +1,89 @@
 ﻿@model Sweet_Shop_Management.Models.SaleViewModel
 
 <div class="container mt-4">
-    <div class="card shadow-lg" id="formsContainer">
-        <div class="card-header bg-primary text-white d-flex justify-content-between">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
             <h4 class="mb-0">Record a Sale</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post" id="saleForm">
-                 <div class="form-group">
-                    <label asp-for="SweetItemId">Select Sweet Item</label>
-                    <select asp-for="SweetItemId" class="form-control" id="sweetItemId">
-                        <option value="">-- Select --</option>
+           <form asp-action="Create" method="post" id="saleForm">
+            <!-- Item Selection Section -->
+            <div class="form-group">
+                <label for="selectSweetItem">Select Sweet Item</label>
+                    <select id="selectSweetItem" class="form-control selectpicker" data-live-search="true" multiple>
                         @foreach (var item in ViewBag.SweetItems)
                         {
-                            <option value="@item.SweetItemId" data-quantity="@item.TotalAvailableQuantity" data-unit="@item.Unit">
+                            <option value="@item.SweetItemId" data-name="@item.SweetItemName" data-quantity="@item.TotalAvailableQuantity" data-unit="@item.Unit">
                                 @item.SweetItemName (@item.TotalAvailableQuantity @item.Unit available)
                             </option>
                         }
                     </select>
-                    <span asp-validation-for="SweetItemId" class="text-danger"></span>
-                </div> 
-
-                <div class="form-group">
-                    <label asp-for="QuantitySold">Quantity Sold</label>
-                    <div class="d-flex">
-                        <input asp-for="QuantitySold" class="form-control" id="quantitySold" placeholder="Enter quantity sold" type="number" min="1" required />
-                        <select asp-for="Unit" class="form-control ms-2" style="width: 100px;" id="unit" required>
-                            <option value="" disabled selected>Unit</option>
-                            <option value="Kg">Kg</option>
-                            <option value="Gram">Gram</option>
-                            <option value="Liter">liter</option>
-                            <option value="Peices">Peices</option>
-                        </select>
-                        <span asp-validation-for="Unit" class="text-danger" id="unitError"></span>
+                  <div id="selectedItemsContainer" class="mt-4">
+                        <table id="selectedItemsTable" class="table table-bordered table-striped d-none">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Avl. Quantity</th>
+                                    <th>Qnty. Sold</th>
+                                    <th>Cost Price</th>
+                                    <th>Price per Unit</th>
+                                    <th>Final Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically added rows will appear here -->
+                            </tbody>
+                        </table>
                     </div>
-                    <span asp-validation-for="QuantitySold" class="text-danger" id="quantitySoldError"></span>
-                </div>
 
-                @* <div class="form-group">
-                    <label asp-for="CostPrice">Purchase Price per Unit</label>
-                    <input asp-for="CostPrice" class="form-control" placeholder="Enter cost price" id="costPrice" readonly />
-                    <span asp-validation-for="CostPrice" class="text-danger"></span>
-                </div> *@
 
-                <div class="form-group">
-                    <label asp-for="CostPrice">Purchase Price per Unit</label>
-                    <div class="input-group">
-                        <input asp-for="CostPrice" class="form-control" placeholder="Enter cost price" id="costPrice" readonly />
-                        <span class="input-group-text" id="currencyLabel">@Model.Currency</span>
-                    </div>
-                    <span asp-validation-for="CostPrice" class="text-danger"></span>
-                </div>
- 
+            <!-- Final Price Section -->
+            <div class="form-group mt-4">
+                <label for="discount">Discount (%)</label>
+                <input type="number" id="discount" class="form-control" placeholder="Enter discount percentage" min="0" max="100" step="0.01" value="0">
+            </div>
+            <div class="form-group">
+                <label for="totalFinalPrice">Final Price to Be Paid</label>
+                <input type="text" id="totalFinalPrice" class="form-control" readonly>
+            </div>
 
-               @*  <div class="form-group">
-                    <label asp-for="SalePrice">Sale Price</label>
-                    <input asp-for="SalePrice" class="form-control" placeholder="Enter sale price" id="salePrice" type="number" min="0.01" required />
-                    <span asp-validation-for="SalePrice" class="text-danger"></span>
-                </div> *@
-                <div class="form-group">
-                    <label class="form-label">Price per Unit</label>
-                    <div class="d-flex">
-                        <input asp-for="SalePrice" class="form-control" id="salePrice" placeholder="Enter the price per unit" />
-                        <select asp-for="Currency" class="form-control ms-2" style="width: 80px;" id="currency">
-                            <option value="INR">INR (₹)</option>
-                            <option value="USD">USD ($)</option>
-                            <option value="EUR">EUR (€)</option>
-                        </select>
-                    </div>
-                    <span asp-validation-for="SalePrice" class="text-danger"></span>
-                </div> 
-
-                <div class="form-group">
-                    <label asp-for="Discount">Discount (%)</label>
-                    <input asp-for="Discount" type="number" class="form-control" id="discount" placeholder="Enter discount percentage" min="0" max="100" step="0.01" value="0" required />
-                    <span id="discountError" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="SalePrice" class="form-label">Final Price To Be Paid</label>
-                    <div class="input-group">
-                        <input asp-for="SalePrice" type="text" class="form-control" id="finalPrice" readonly />
-                        <span class="input-group-text" id="currencyLabel1">@Model.Currency</span>
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <button type="submit" id="submitButton" class="btn btn-success">Submit</button>
-                </div>
+            <div class="text-center mt-4">
+                <button type="button" id="submitSale" class="btn btn-success">Submit Sale</button>
+            </div>
             </form>
+        </div>
+    </div>
+</div>
 
-            <!-- Receipt Container -->
-            <div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header bg-info text-white">
-                            <h5 class="modal-title" id="receiptModalLabel">Sale Receipt</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" id="receiptModalBody">
-                            
-                        </div>
-                        <div class="modal-footer">
-                            <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button id="closeReceipt" class="btn btn-secondary">Close and Submit</button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Sale Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="receiptModalLabel">Sale Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="receiptModalBody">
+
+            </div>
+            <div class="modal-footer">
+                <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="closeReceipt" class="btn btn-secondary">Close and Submit</button>
             </div>
         </div>
     </div>
+</div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/sale/sale.js"> </script> @* Discount calucation logic is present in this file *@
-    <script src="~/js/sale/receipt.js"> </script> @* In this file we have our code for receipt generation *@
+    <script src="~/js/sale/receipt.js"> </script> @*In this file we have our code for receipt generation *@
     <script src="~/js/sale/quanitityValidation.js"> </script> @* In this file we have our code for Quantity sold validation *@
-
-    @* used to fetch the real time cost price of the Item which we are going to sold *@ 
-        <script>
-        $('#sweetItemId').change(function () {
-            var sweetItemId = $(this).val();
-            if (sweetItemId) {
-                $.ajax({
-                    url: '@Url.Action("GetCostPrice", "Sale")',
-                    type: 'GET',
-                    data: { sweetItemId: sweetItemId },
-                    success: function (data) {
-                        $('#costPrice').val(data.costPrice);
-                        $('#currencyLabel').text(data.currency);
-                    },
-                    error: function () {
-                        alert('An error occurred while fetching the cost price.');
-                    }
-                });
-            }
-            else {
-                $('#costPrice').val('');
-                $('#currencyLabel').text('');
-            }
-        });
+    <script>
+        var getCostPriceUrl = '@Url.Action("GetCostPrice", "Sale")';
     </script>
+    <script src="~/js/sale/saleSweetItem.js"></script> @* It have the code for Sale Sweet Items for multiple item selection *@
 }
