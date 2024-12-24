@@ -6,7 +6,7 @@
             <h4 class="mb-0">Record a Sale</h4>
         </div>
         <div class="card-body">
-           <form asp-action="Create" method="post" id="saleForm">
+           <form  asp-controller="Sale" asp-action="Create" method="post" id="saleForm">
             <!-- Item Selection Section -->
             <div class="form-group">
                 <label for="selectSweetItem">Select Sweet Item</label>
@@ -48,9 +48,12 @@
                 <input type="text" id="totalFinalPrice" class="form-control" readonly>
             </div>
 
-            <div class="text-center mt-4">
+           <div class="text-center mt-4">
                 <button type="button" id="submitSale" class="btn btn-success">Submit Sale</button>
             </div>
+                    <div class="text-center mt-4">
+                        <button type="button" id="saveSale" class="btn btn-success">Save Sale Record</button>
+                    </div>
             </form>
         </div>
     </div>
