@@ -6,7 +6,6 @@ using Sweet_Shop_Management.Repository.IRepository;
 
 namespace Sweet_Shop_Management.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

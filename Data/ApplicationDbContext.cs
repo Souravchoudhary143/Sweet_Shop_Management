@@ -14,5 +14,7 @@ namespace Sweet_Shop_Management.Data
         public DbSet<Sale> Sales { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<OrderDetails> OrderDetails { get; set; }
+        public DbSet<OrderItems> OrderItems { get; set; }
     }
 }

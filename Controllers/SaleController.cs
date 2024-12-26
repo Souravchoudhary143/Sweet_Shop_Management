@@ -70,7 +70,6 @@ namespace Sweet_Shop_Management.Controllers
             return View(saleViewModel);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(List<SaleViewModel> saleViewModels)
         {
             try

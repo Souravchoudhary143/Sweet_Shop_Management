@@ -41,7 +41,7 @@
             <!-- Final Price Section -->
             <div class="form-group mt-4">
                 <label for="discount">Discount (%)</label>
-                <input type="number" id="discount" class="form-control" placeholder="Enter discount percentage" min="0" max="100" step="0.01" value="0">
+                <input type="number" id="discount" class="form-control" name="Discount" placeholder="Enter discount percentage" min="0" max="100" step="0.01" value="0">
             </div>
             <div class="form-group">
                 <label for="totalFinalPrice">Final Price to Be Paid</label>
@@ -49,11 +49,9 @@
             </div>
 
            <div class="text-center mt-4">
-                <button type="button" id="submitSale" class="btn btn-success">Submit Sale</button>
+                        <button type="button" id="submitSale" class="btn btn-outline-success m-2 p-2" fdprocessedid="5qoqqc">Sale Summary & Print</button>
+                        <button type="button" id="saveSale" class="btn btn-outline-success" fdprocessedid="5qoqqc">Save Sale Record</button>
             </div>
-                    <div class="text-center mt-4">
-                        <button type="button" id="saveSale" class="btn btn-success">Save Sale Record</button>
-                    </div>
             </form>
         </div>
     </div>
@@ -73,8 +71,8 @@
             <div class="modal-footer">
                 <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button id="closeReceipt" class="btn btn-secondary">Close and Submit</button>
-            </div>
+               <button id="closeReceipt" class="btn btn-secondary">Close and Save Order</button>
+               </div>
         </div>
     </div>
 </div>
@@ -88,5 +86,6 @@
     <script>
         var getCostPriceUrl = '@Url.Action("GetCostPrice", "Sale")';
     </script>
+    <script> var orderUrl = '@Url.Action("SaveOrder", "Order")' </script>
     <script src="~/js/sale/saleSweetItem.js"></script> @* It have the code for Sale Sweet Items for multiple item selection *@
 }

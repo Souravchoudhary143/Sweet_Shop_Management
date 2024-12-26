@@ -146,9 +146,7 @@
 
 
 $(document).ready(function () {
-    debugger;
     $('#saveSale').on('click', function () {
-        debugger;
         $('#saleForm').find('input[type="hidden"]').remove();
 
         const $tableBody = $('#selectedItemsTable').find('tbody');
@@ -160,28 +158,46 @@ $(document).ready(function () {
             const $row = $(this);
             $('<input>').attr({
                 type: 'hidden',
-                name: `Sales[${index}].SweetItemId`,
+                name: `saleViewModels[${index}].SweetItemId`,
                 value: $row.data('id'),
             }).appendTo('#saleForm');
 
             $('<input>').attr({
                 type: 'hidden',
-                name: `Sales[${index}].QuantitySold`,
+                name: `saleViewModels[${index}].QuantitySold`,
                 value: $row.find('.quantity-sold').val(),
             }).appendTo('#saleForm');
 
             $('<input>').attr({
                 type: 'hidden',
-                name: `Sales[${index}].SalePrice`,
+                name: `saleViewModels[${index}].Unit`,
+                value: $row.find('.quantity-unit').val(),
+            }).appendTo('#saleForm');
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: `saleViewModels[${index}].SalePrice`,
                 value: $row.find('.price-per-unit').val(),
             }).appendTo('#saleForm');
 
             $('<input>').attr({
                 type: 'hidden',
-                name: `Sales[${index}].FinalPrice`,
+                name: `saleViewModels[${index}].Currency`,
+                value: $row.find('.price-currency').val(),
+            }).appendTo('#saleForm');
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: `saleViewModels[${index}].FinalPrice`,
                 value: $row.find('.final-price').val(),
             }).appendTo('#saleForm');
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'saleViewModels[${index}].Discount',
+                value: discount,
+            }).appendTo('#saleForm');
         });
-        $('#saleForm').submit();
+        $('#saleForm')[0].submit();
     });
 });

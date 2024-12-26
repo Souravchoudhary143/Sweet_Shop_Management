@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Sweet_Shop_Management.Models.OrderDetails>
+
+
+<h3 class="m-3 p-3">Oder Details</h3>
+<table id="ordersTable" class="table table table-striped table-bordered table-hover m-4 p-4">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Total Items</th>
+            <th>Total Price</th>
+            <th>Discount</th>
+            <th>Final Price</th>
+            <th>Order Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr class="sale-row" >
+                <td>@order.Id</td>
+                <td>@order.TotalItems</td>
+                <td>@order.TotalPrice</td>
+                <td>@order.Discount</td>
+                <td>@order.FinalPrice</td>
+                <td>@order.OrderDate</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='@Url.Action("GetOrderItems", "Order")?orderId=@order.Id'">View Items</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+@* <script src="~/js/order.js"></script> *@
+    <script>
+        $(document).ready(function () {
+          $('#ordersTable').DataTable();
+        });
+    </script>
+  } 

@@ -1,11 +1,14 @@
 ﻿$(document).ready(function () {
     $('#submitSale').on('click', function () {
+        let saleItems = [];
         let saleItemsSummary = '';
         let totalPrice = 0;
+        let totalItems = 0;
 
         // Loop through each row in the selected items table
         $('#selectedItemsTable tbody tr').each(function () {
             const $row = $(this);
+            const sweetItemId = $row.data('id');
             const itemName = $row.find('td').eq(0).text(); // Item name from the first column
             const quantitySold = parseFloat($row.find('.quantity-sold').val()) || 0;
             const unit = $row.find('.quantity-unit').val() || 'Unit'; // Fetching the unit from the dropdown
@@ -24,11 +27,30 @@
                     </tr>
                 `;
                 totalPrice += finalPrice;
+                
+                    totalItems += 1;
+                
+
+                // Push data into saleItems array
+                saleItems.push({
+                    SweetItemId: sweetItemId,
+                    QuantitySold: quantitySold,
+                    SalePrice: pricePerUnit,
+                    FinalPrice: finalPrice,
+                    Discount: $('#discount').val() || 0,
+                    Unit: unit,
+                    Currency: currency
+                });
             }
         });
 
         const discount = parseFloat($('#discount').val()) || 0;
         const discountedPrice = totalPrice - (totalPrice * (discount / 100));
+
+        console.log('Sale Items:', saleItems);
+        console.log('Total Price:', totalPrice);
+        console.log('Discounted Price:', discountedPrice);
+
         const receiptContent = `
             <div>
                 <h5><strong>Sale Items:</strong></h5>
@@ -69,9 +91,13 @@
             printWindow.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">'); // Optional: Link to Bootstrap for styling
             printWindow.document.write('</head><body>');
             printWindow.document.write(printContents);
-            printWindow.document.close(); // Close the document to finish rendering
-            printWindow.focus(); // Ensure focus is on the print window
-            printWindow.print(); // Trigger print dialog
+            printWindow.document.close(); 
+            printWindow.focus();
+            printWindow.print(); 
+            setTimeout(function () {
+                $('#closeReceipt').click();
+                $('#saveSale').click(); 
+            }, 3000);
         });
 
         // Close and Submit functionality
@@ -82,55 +108,33 @@
         //$('#closeReceipt').click(function () {
         //    $('#saleForm')[0].submit(); // Submit the form after closing
         //});
-        $('#closeReceipt').click(function () {
-            // Gather all rows from the selected items table
-            var selectedItems = [];
-            $('#selectedItemsTable tbody tr').each(function () {
-                var item = {
-                    SweetItemId: $(this).data('sweetitemid'),
-                    QuantitySold: $(this).find('.quantitySold').val(),
-                    SalePrice: $(this).find('.salePrice').val(),
-                    Discount: $(this).find('.discount').val(),
-                    FinalPrice: $(this).find('.finalPrice').text()
-                };
-                selectedItems.push(item);
+        $('#closeReceipt').off('click').on('click', function () {
+            $.ajax({
+                url: orderUrl, 
+                type: 'POST',
+                contentType: 'application/json',
+                data : JSON.stringify({
+                    OrderItems: saleItems,
+                    TotalPrice: totalPrice,
+                    TotalItems: totalItems,
+                    FinalPrice: discountedPrice,
+                    Discount: discount,
+                    SaleDate: new Date().toISOString()
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        //It will automatically trigger the save sell record button 
+                        $('#saveSale').click();
+                        // Close the receipt (modal or receipt section) after successful submission
+                        $('#receiptModal').modal('hide');
+                    } else {
+                        alert('Failed to save the order. Please try again.');
+                    }
+                },
+                error: function (error) {
+                    alert('Failed to save the order. Please try again.');
+                }
             });
-
-            // Append the selected items to the form as hidden inputs
-            selectedItems.forEach(function (item, index) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'saleViewModels[' + index + '].SweetItemId',
-                    value: item.SweetItemId
-                }).appendTo('#saleForm');
-
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'saleViewModels[' + index + '].QuantitySold',
-                    value: item.QuantitySold
-                }).appendTo('#saleForm');
-
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'saleViewModels[' + index + '].SalePrice',
-                    value: item.SalePrice
-                }).appendTo('#saleForm');
-
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'saleViewModels[' + index + '].Discount',
-                    value: item.Discount
-                }).appendTo('#saleForm');
-
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'saleViewModels[' + index + '].FinalPrice',
-                    value: item.FinalPrice
-                }).appendTo('#saleForm');
-            });
-
-            // Now submit the form
-            $('#saleForm')[0].submit();
         });
     });
 });
