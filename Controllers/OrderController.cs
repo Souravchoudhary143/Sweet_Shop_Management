@@ -26,10 +26,11 @@ namespace Sweet_Shop_Management.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetOrderItems(int orderId)
+        public IActionResult GetOrderItems(int? orderId)
         {
-            // Transform OrderItems to a view model
-            var orderItems = _context.OrderItems
+            try
+            {
+                var orderItems = _context.OrderItems
                 .Where(item => item.OrderId == orderId)
                 .Include(item => item.SweetItem)
                 .Select(item => new ItemViewModel
@@ -38,17 +39,49 @@ namespace Sweet_Shop_Management.Controllers
                     SweetItemName = item.SweetItem.ItemName,
                     QuantitySold = item.QuantitySold,
                     SalePrice = item.SalePrice,
-                    FinalPrice = item.FinalPrice
+                    FinalPrice = item.FinalPrice,
+                    OrderId = item.OrderId,
+                    Unit = item.Unit ?? "Unit",
+                    Currency = item.Currency ?? "INR"
                 }).ToList();
 
-            return View(orderItems);
+                return View(orderItems);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        [HttpGet]
+        public IActionResult GetAllOrderItems()
+        {
+            try
+            {
+                var orders = _context.OrderItems
+                    .Select(item => new ItemViewModel
+                    {
+                        SweetItemId = item.SweetItem.Id,
+                        SweetItemName = item.SweetItem.ItemName,
+                        QuantitySold = item.QuantitySold,
+                        SalePrice = item.SalePrice,
+                        FinalPrice = item.FinalPrice,
+                        OrderId = item.OrderId,
+                        Unit = item.Unit ?? "Unit",
+                        Currency = item.Currency ?? "INR"
+                    }).ToList();
+                return View(orders);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         [HttpPost]
         public IActionResult SaveOrder([FromBody] SaveOrderViewModel model)
         {
-            if (ModelState.IsValid)
-            {
                 try
                 {
                     // Save OrderDetails
@@ -73,14 +106,10 @@ namespace Sweet_Shop_Management.Controllers
                             SweetItemId = item.SweetItemId,
                             QuantitySold = item.QuantitySold,
                             SalePrice = item.SalePrice,
-                            FinalPrice = item.FinalPrice
+                            FinalPrice = item.FinalPrice,
+                            Unit = item.Unit ??  "Unit",
+                            Currency = item.Currency ?? "INR"
                         };
-
-                        // Deduct quantity from SweetItem
-                        var sweetItem = _context.SweetItems.Find(item.SweetItemId);
-                        sweetItem.TotalQuantity -= item.QuantitySold;
-                        sweetItem.TotalSellQuantity += item.QuantitySold;
-
                         _context.OrderItems.Add(orderItem);
                     }
 
@@ -92,9 +121,6 @@ namespace Sweet_Shop_Management.Controllers
                 {
                     return Json(new { success = false, message = "An error occurred while saving the order: " + ex.Message });
                 }
-            }
-
-            return Json(new { success = false, message = "Invalid data submitted." });
         }
     }
 }

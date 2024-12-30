@@ -33,12 +33,6 @@ namespace Sweet_Shop_Management.Models
         public List<OrderItemViewModel> OrderItems { get; set; }
     }
 
-    public class OrderDetailsViewModel
-    {
-        public IEnumerable<OrderDetails> Orders { get; set; }
-        public IEnumerable<OrderItemViewModel> OrderItems { get; set; }
-    }
-
     public class OrderItemViewModel
     {
         public int SweetItemId { get; set; }
@@ -52,5 +46,7 @@ namespace Sweet_Shop_Management.Models
 
         [Display(Name = "Final Price")]
         public double FinalPrice { get; set; }
+        public string Unit { get; set; }
+        public string Currency { get; set; }
     }
 }

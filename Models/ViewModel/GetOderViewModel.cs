@@ -45,5 +45,8 @@ namespace Sweet_Shop_Management.Models.ViewModel
 
             [Display(Name = "Final Price")]
             public double FinalPrice { get; set; }
+            public double OrderId { get; set; }
+            public string Unit { get; internal set; }
+            public string Currency { get; internal set; }
     }
 }

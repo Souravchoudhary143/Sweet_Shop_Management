@@ -28,5 +28,11 @@ namespace Sweet_Shop_Management.Models
 
         [Display(Name = "Final Price")]
         public double FinalPrice { get; set; }
+
+        [Display(Name = "Unit")]
+        public string Unit { get; set; }
+
+        [Display(Name = "Currency")]
+        public string Currency { get; set; }
     }
 }

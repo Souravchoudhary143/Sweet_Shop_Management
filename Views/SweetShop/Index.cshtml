@@ -33,7 +33,6 @@
                 <td>@($"{item.TotalQuantity} {item.Unit}")</td>
                @*  <td>@($"{item.FinalCost} {item.Currency}")</td> *@
                 <td>@item.ProductCategory</td>
-@*<td>@(item.ProductCategory != null ? item.ProductCategory.Category : "No Category")</td> *@
                     <td>
                     <a asp-controller="SweetShop" asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
                         <i class="fas fa-info-circle"></i> See Details
@@ -42,7 +41,7 @@
                         <i class="fas fa-edit"></i> Edit
                     </a>
                     <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        <button type="button" class="btn btn-danger btn-sm delete-button">Delete</button>
                     </form> |
                     <button id="show-@item.Id" class="btn btn-info btn-sm" data-toggle="modal" data-target="#addQuantityModal-@item.Id" data-item-id="@item.Id" data-current-quantity="@item.TotalQuantity">Add Quantity</button>
                 </td>
@@ -93,6 +92,6 @@
 
 
 @section Scripts {
-    <script src="~/js/sweet/dataTable.js"></script>  @* Under this file we have the logic of datatable and also the functionality to add qantity *@
+    <script src="~/js/sweet/dataTable.js"></script>  @* Under this file we have the logic of datatable and also the functionality to add qantity && Delete confirmation *@
 }
 

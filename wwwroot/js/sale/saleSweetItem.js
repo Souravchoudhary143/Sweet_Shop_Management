@@ -7,21 +7,35 @@
     const $saleForm = $('#saleForm');
 
     $sweetItemDropdown.on('change', function () {
-        const $selectedOption = $(this).find(':selected');
+        let isDuplicate = false;
+        
+        const $selectedOption = $(this).find(':selected').last();
         const sweetItemId = $selectedOption.val();
-
         if (!sweetItemId) return;
 
-        const sweetItemName = $selectedOption.data('name');
-        const availableQuantity = parseFloat($selectedOption.data('quantity'));
-        const unit = $selectedOption.data('unit');
-
-        // Check if the item is already selected
-        if ($tableBody.find(`tr[data-id="${sweetItemId}"]`).length > 0) {
-            alert('This item is already selected. Please choose a different item.');
+        $tableBody.find('tr').each(function () {
+            const existingId = $(this).data('id');
+            if (existingId == sweetItemId) {
+                isDuplicate = true;
+                return false;
+            }
+        });
+        if (isDuplicate) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'This item is already selected. Please choose a different item.',
+                confirmButtonText: 'OK',
+                position: 'top-bottom',
+                customClass: {
+                    popup: 'swal-custom-popup'
+                }
+            });
             $sweetItemDropdown.val(''); // Reset dropdown
             return;
         }
+        const sweetItemName = $selectedOption.data('name');
+        const availableQuantity = parseFloat($selectedOption.data('quantity'));
+        const unit = $selectedOption.data('unit');       
 
         // Create and append a new row for the selected item
         const $row = $(`
@@ -30,34 +44,36 @@
                 <td>${availableQuantity} ${unit}</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" class="form-control quantity-sold" 
-                               data-available="${availableQuantity}" 
-                               placeholder="Quantity" min="1.00" 
-                               max="${availableQuantity}" required 
-                               style="max-width: 350px;">
-                        <select class="form-select quantity-unit" style="max-width: 80px;">
+                        <input type="number" class="form-control quantity-sold"
+                               data-available="${availableQuantity}"
+                               placeholder="Quantity" min="1.00"
+                               max="${availableQuantity}" required
+                               style="width: 80px;">
+                        <select class="form-select quantity-unit" style="max-width: 150px;">
                             <option value="${unit}" selected>${unit}</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Gram">Gram</option>
                         </select>
                     </div>
-                    <div class="error-message text-danger" style="display:none;"></div>
+                    <div class="error-message text-danger" style="display;"></div>
                 </td>
                 <td>
-                    <input type="text" class="form-control cost-price" readonly>
+                    <input type="text" class="form-control cost-price" readonly   style="width: 80px;">
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="number" class="form-control price-per-unit" 
-                               placeholder="Price per Unit" min="1.00" required>
+                        <input type="number" class="form-control price-per-unit"
+                               placeholder="Price per Unit" min="1.00" required  style="width: 80px;">
                         <select class="form-select price-currency" style="max-width: 80px;">
                             <option value="INR" selected>INR</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                         </select>
                     </div>
-                    <div class="error-message text-danger" style="display:none;"></div>
+                    <div class="error-message text-danger" style="display;"></div>
                 </td>
                 <td>
-                    <input type="text" class="form-control final-price" readonly>
+                    <input type="text" class="form-control final-price" readonly  style="width: 80px;">
                 </td>
                 <td>
                     <button class="btn btn-danger btn-sm remove-item">Remove</button>
@@ -83,8 +99,12 @@
 
         // Add functionality to remove button
         $row.find('.remove-item').on('click', function () {
+            const $row = $(this).closest("tr");
+            const sweetItemId = $row.data('id');
             $row.remove();
-            $sweetItemDropdown.find(`option[value="${sweetItemId}"]`).prop('disabled', false);
+            const $option = $sweetItemDropdown.find(`option[value="${sweetItemId}"]`);
+            $option.prop("disabled", false);
+            $option.prop("selected", false);
             updateTotalFinalPrice();
 
             if ($tableBody.children('tr').length === 0) {
@@ -92,17 +112,81 @@
             }
         });
 
-        // Handle quantity and price changes
         $row.find('.quantity-sold, .price-per-unit').on('input', function () {
+            validateFields($row);
             validateQuantity($row);
             calculateRowFinalPrice($row);
             updateTotalFinalPrice();
         });
 
-        // Disable selected option and reset dropdown
         $selectedOption.prop('disabled', true);
         $sweetItemDropdown.val('');
     });
+
+
+    function validateFields($row) {
+        const $quantityInput = $row.find('.quantity-sold');
+        const $priceInput = $row.find('.price-per-unit');
+        const $quantityError = $quantityInput.siblings('.error-message');
+        const $priceError = $priceInput.siblings('.error-message');
+
+        let isValid = true;
+
+        if (!$quantityInput.val()) {
+            $quantityError.text('Quantity is required.').show();
+            isValid = false;
+        } else {
+            $quantityError.hide();
+        }
+
+        // Validate price per unit field
+        if (!$priceInput.val()) {
+            $priceError.text('Price per unit is required.').show();
+            isValid = false;
+        } else {
+            $priceError.hide();
+        }
+
+        return isValid;
+    }
+
+    $(document).on('change', '.quantity-unit', function () {
+        const $row = $(this).closest('tr');
+        const selectedUnit = $(this).val();
+        const $quantityInput = $row.find('.quantity-sold');
+        const currentQuantity = parseFloat($quantityInput.val()) || 0;
+        const availableQuantity = parseFloat($quantityInput.data('available'));
+
+        if (selectedUnit === 'Gram') {
+            $quantityInput.data('available', availableQuantity * 1000);
+        } else if (selectedUnit === 'Kg') {
+            $quantityInput.data('available', availableQuantity / 1000);
+        }
+
+        if (currentQuantity > 0) {
+            let adjustedQuantity;
+            if (selectedUnit === 'Gram') {
+                adjustedQuantity = currentQuantity * 1000;
+            } else if (selectedUnit === 'Kg') {
+                adjustedQuantity = currentQuantity / 1000;
+            }
+            Swal.fire({
+                icon: 'question',
+                title: 'Adjust Quantity?',
+                text: `Would you like to adjust the entered quantity (${currentQuantity}) to the new unit (${adjustedQuantity} ${selectedUnit})?`,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, adjust it',
+                cancelButtonText: 'No, keep it as is',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $quantityInput.val(adjustedQuantity.toFixed(2));
+                }
+            });
+        }
+
+        validateQuantity($row);
+    });
+
 
     function validateQuantity($row) {
         const $quantityInput = $row.find('.quantity-sold');
@@ -110,16 +194,31 @@
         const enteredQuantity = parseFloat($quantityInput.val()) || 0;
 
         if (enteredQuantity > availableQuantity) {
-            alert('Sold quantity cannot exceed available quantity.');
-            $quantityInput.val(availableQuantity);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Quantity Exceed',
+                text: 'Sold quantity cannot exceed available quantity.',
+                confirmButtonText: 'OK',
+                position: 'top-bottom',
+                customClass: {
+                    popup: 'swal-custom-popup'
+                }
+            });
+           $quantityInput.val(' ');
         }
     }
 
     function calculateRowFinalPrice($row) {
         const quantity = parseFloat($row.find('.quantity-sold').val()) || 0;
         const pricePerUnit = parseFloat($row.find('.price-per-unit').val()) || 0;
+        const unit = $row.find('.quantity-unit').val();
+        let adjustedQuantity = quantity;
 
-        const finalPrice = quantity * pricePerUnit;
+        if (unit === 'Gram') {
+            adjustedQuantity = quantity / 1000;
+        }
+
+        const finalPrice = adjustedQuantity * pricePerUnit;
         $row.find('.final-price').val(finalPrice.toFixed(2));
     }
 
@@ -130,8 +229,23 @@
             const finalPrice = parseFloat($(this).find('.final-price').val()) || 0;
             totalPrice += finalPrice;
         });
-
         const discount = parseFloat($discount.val()) || 0;
+         if (discount < 0) {
+            $discount.val(0);
+        }
+        if (discount > 100) {
+            $discount.val(100);
+            Swal.fire({
+                icon: 'warning',
+                text: 'Discount cannot exceed 100%. It has been set to 100%.',
+                confirmButtonText: 'OK',
+                position: 'top-bottom',
+                customClass: {
+                    popup: 'swal-custom-popup'
+                }
+            });
+        }
+
         if (discount > 0) {
             totalPrice -= totalPrice * (discount / 100);
         }
@@ -140,18 +254,58 @@
     }
 
     $discount.on('input', updateTotalFinalPrice);
-    //// Form submission logic
 });
 
 
 
+// Form submission logic
 $(document).ready(function () {
     $('#saveSale').on('click', function () {
         $('#saleForm').find('input[type="hidden"]').remove();
 
         const $tableBody = $('#selectedItemsTable').find('tbody');
         if ($tableBody.children('tr').length === 0) {
-            alert('Please select at least one item before submitting.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Items Selected',
+                text: 'Please select at least one item before submitting.',
+                confirmButtonText: 'OK',
+                position: 'top-bottom',
+                customClass: {
+                    popup: 'swal-custom-popup'
+                }
+            });
+            return;
+        }
+
+        let isValid = true; 
+
+        $tableBody.find('tr').each(function () {
+            const $row = $(this);
+            $row.find('input, select').each(function () {
+                const $input = $(this);
+                const value = $input.val();
+
+                if (!value || value.trim() === '') {
+                    $input.closest('div').find('.error-message').show();
+                    isValid = false;
+                } else {
+                    $input.closest('div').find('.error-message').hide();
+                }
+            });
+        });
+
+        if (!isValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Failed',
+                text: 'Please fill all required fields before submission.',
+                confirmButtonText: 'Fix Issues',
+                position: 'top-bottom',
+                customClass: {
+                    popup: 'swal-custom-popup'
+                }
+            });
             return;
         }
         $tableBody.find('tr').each(function (index) {
@@ -201,3 +355,4 @@ $(document).ready(function () {
         $('#saleForm')[0].submit();
     });
 });
+

@@ -11,7 +11,7 @@
             const sweetItemId = $row.data('id');
             const itemName = $row.find('td').eq(0).text(); // Item name from the first column
             const quantitySold = parseFloat($row.find('.quantity-sold').val()) || 0;
-            const unit = $row.find('.quantity-unit').val() || 'Unit'; // Fetching the unit from the dropdown
+            const unit = $row.find('.quantity-unit').val() || 'Unit';
             const currency = $row.find('.price-currency').val() || 'INR';
             const pricePerUnit = parseFloat($row.find('.price-per-unit').val()) || 0;
             const finalPrice = parseFloat($row.find('.final-price').val()) || 0;
@@ -30,8 +30,6 @@
                 
                     totalItems += 1;
                 
-
-                // Push data into saleItems array
                 saleItems.push({
                     SweetItemId: sweetItemId,
                     QuantitySold: quantitySold,
@@ -46,10 +44,6 @@
 
         const discount = parseFloat($('#discount').val()) || 0;
         const discountedPrice = totalPrice - (totalPrice * (discount / 100));
-
-        console.log('Sale Items:', saleItems);
-        console.log('Total Price:', totalPrice);
-        console.log('Discounted Price:', discountedPrice);
 
         const receiptContent = `
             <div>
@@ -88,16 +82,15 @@
 
             const printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.write('<html><head><title>Receipt</title>');
-            printWindow.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">'); // Optional: Link to Bootstrap for styling
+            printWindow.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
             printWindow.document.write('</head><body>');
             printWindow.document.write(printContents);
             printWindow.document.close(); 
             printWindow.focus();
             printWindow.print(); 
             setTimeout(function () {
-                $('#closeReceipt').click();
-                $('#saveSale').click(); 
-            }, 3000);
+                $('#closeReceipt').click(); 
+            }, 1000);
         });
 
         // Close and Submit functionality
@@ -105,15 +98,12 @@
             $('#receiptModal').modal('hide');
         });
 
-        //$('#closeReceipt').click(function () {
-        //    $('#saleForm')[0].submit(); // Submit the form after closing
-        //});
         $('#closeReceipt').off('click').on('click', function () {
             $.ajax({
                 url: orderUrl, 
                 type: 'POST',
                 contentType: 'application/json',
-                data : JSON.stringify({
+                data: JSON.stringify({
                     OrderItems: saleItems,
                     TotalPrice: totalPrice,
                     TotalItems: totalItems,
@@ -128,7 +118,7 @@
                         // Close the receipt (modal or receipt section) after successful submission
                         $('#receiptModal').modal('hide');
                     } else {
-                        alert('Failed to save the order. Please try again.');
+                        alert('Failed to save the order details. Please try again.');
                     }
                 },
                 error: function (error) {
@@ -138,7 +128,3 @@
         });
     });
 });
-
-
-
-

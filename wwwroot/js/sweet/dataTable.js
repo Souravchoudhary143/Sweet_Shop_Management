@@ -25,3 +25,29 @@ $(document).ready(function () {
  $(document).ready(function () {
    $('#tblData').DataTable();
  });
+
+
+//For delete confirmation
+document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".delete-button");
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const form = this.closest("form");
+            if (form) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "After Deleting it the sell records related to this item will also be deleted",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        });
+    });
+});

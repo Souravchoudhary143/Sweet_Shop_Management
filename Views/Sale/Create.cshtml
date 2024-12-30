@@ -7,7 +7,7 @@
         </div>
         <div class="card-body">
            <form  asp-controller="Sale" asp-action="Create" method="post" id="saleForm">
-            <!-- Item Selection Section -->
+
             <div class="form-group">
                 <label for="selectSweetItem">Select Sweet Item</label>
                     <select id="selectSweetItem" class="form-control selectpicker" data-live-search="true" multiple>
@@ -32,13 +32,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Dynamically added rows will appear here -->
-                            </tbody>
+
+                           </tbody>
                         </table>
                     </div>
 
 
-            <!-- Final Price Section -->
             <div class="form-group mt-4">
                 <label for="discount">Discount (%)</label>
                 <input type="number" id="discount" class="form-control" name="Discount" placeholder="Enter discount percentage" min="0" max="100" step="0.01" value="0">
@@ -49,9 +48,11 @@
             </div>
 
            <div class="text-center mt-4">
-                        <button type="button" id="submitSale" class="btn btn-outline-success m-2 p-2" fdprocessedid="5qoqqc">Sale Summary & Print</button>
-                        <button type="button" id="saveSale" class="btn btn-outline-success" fdprocessedid="5qoqqc">Save Sale Record</button>
-            </div>
+                <button type="button" id="submitSale" class="btn btn-outline-success m-2 p-2" fdprocessedid="5qoqqc">Sale Summary & Print</button>
+                        <button type="button" id="saveSale" class="btn btn-outline-success" fdprocessedid="5qoqqc" data-bs-toggle="tooltip"
+                                data-bs-placement="top" title="This will only save the sale items, not the Order details & Order items.">Save Sale Record
+                        </button>
+           </div>
             </form>
         </div>
     </div>
@@ -69,9 +70,16 @@
 
             </div>
             <div class="modal-footer">
-                <button id="printReceipt" class="btn btn-primary">Print Receipt</button>
+                <button id="printReceipt" class="btn btn-primary"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="All records will be Saved automatically & Receipt will be generated">
+                    Print Receipt
+                </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button id="closeReceipt" class="btn btn-secondary">Close and Save Order</button>
+                <button id="closeReceipt" class="btn btn-secondary" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="This will save the sale items, as well as Order details & Order items.">
+                    Close and Save Order
+                </button>
                </div>
         </div>
     </div>
@@ -85,6 +93,9 @@
     <script src="~/js/sale/quanitityValidation.js"> </script> @* In this file we have our code for Quantity sold validation *@
     <script>
         var getCostPriceUrl = '@Url.Action("GetCostPrice", "Sale")';
+    </script>
+    <script>
+        var dropDown = '@Url.Action("Create", "Sale")';
     </script>
     <script> var orderUrl = '@Url.Action("SaveOrder", "Order")' </script>
     <script src="~/js/sale/saleSweetItem.js"></script> @* It have the code for Sale Sweet Items for multiple item selection *@
