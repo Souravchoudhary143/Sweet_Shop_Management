@@ -64,7 +64,8 @@ $(document).ready(function () {
             var saleMonth = $(this).data('month') ? $(this).data('month').toString() : '';
             const saleDate = $(this).data('saledate');
             var quantitySold = parseInt($(this).find('td:nth-child(2)').text()) || 0;
-            var unit = $(this).data('unit') ? $(this).data('unit').toLowerCase() : '';
+            var unit = $(this).data('unit');
+            unit = unit ? String(unit).toLowerCase() : '';
             var currency = $(this).data('currency') ? $(this).data('currency').toLowerCase() : '';
             var discount = $(this).data('discount') ? $(this).data('discount').toString() : '';
 
