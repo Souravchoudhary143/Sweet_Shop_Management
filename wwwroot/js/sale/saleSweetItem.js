@@ -170,18 +170,18 @@
             } else if (selectedUnit === 'Kg') {
                 adjustedQuantity = currentQuantity / 1000;
             }
-            Swal.fire({
-                icon: 'question',
-                title: 'Adjust Quantity?',
-                text: `Would you like to adjust the entered quantity (${currentQuantity}) to the new unit (${adjustedQuantity} ${selectedUnit})?`,
-                showCancelButton: true,
-                confirmButtonText: 'Yes, adjust it',
-                cancelButtonText: 'No, keep it as is',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $quantityInput.val(adjustedQuantity.toFixed(2));
-                }
-            });
+            //Swal.fire({
+            //    icon: 'question',
+            //    title: 'Adjust Quantity?',
+            //    text: `Would you like to adjust the entered quantity (${currentQuantity}) to the new unit (${adjustedQuantity} ${selectedUnit})?`,
+            //    showCancelButton: true,
+            //    confirmButtonText: 'Yes, adjust it',
+            //    cancelButtonText: 'No, keep it as is',
+            //}).then((result) => {
+            //    if (result.isConfirmed) {
+            //        $quantityInput.val(adjustedQuantity.toFixed(2));
+            //    }
+            //});
         }
 
         validateQuantity($row);
@@ -287,10 +287,10 @@ $(document).ready(function () {
                 const value = $input.val();
 
                 if (!value || value.trim() === '') {
-                    $input.closest('div').find('.error-message').show();
+                    $input.closest('div').find('.error-message').text('This field is required.').show();
                     isValid = false;
                 } else {
-                    $input.closest('div').find('.error-message').hide();
+                    $input.closest('div').find('.error-message').text('This field is required.').hide();
                 }
             });
         });
