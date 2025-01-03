@@ -4,6 +4,7 @@
         let saleItemsSummary = '';
         let totalPrice = 0;
         let totalItems = 0;
+        let isValid = true;
 
         // Loop through each row in the selected items table
         $('#selectedItemsTable tbody tr').each(function () {
@@ -17,33 +18,78 @@
             const finalPrice = parseFloat($row.find('.final-price').val()) || 0;
 
             // Only add to summary if the item has valid data
-            if (quantitySold > 0 && pricePerUnit > 0 && finalPrice > 0) {
-                saleItemsSummary += `
-                    <tr>
-                        <td>${itemName}</td>
-                        <td>${quantitySold}  ${unit}</td>
-                        <td>${pricePerUnit.toFixed(2)} ${currency}</td>
-                        <td>${finalPrice.toFixed(2)} ${currency}</td>
-                    </tr>
-                `;
-                totalPrice += finalPrice;
-                
-                    totalItems += 1;
-                
-                saleItems.push({
-                    SweetItemId: sweetItemId,
-                    QuantitySold: quantitySold,
-                    SalePrice: pricePerUnit,
-                    FinalPrice: finalPrice,
-                    Discount: $('#discount').val() || 0,
-                    Unit: unit,
-                    Currency: currency
-                });
+        //    if (quantitySold > 0 && pricePerUnit > 0 && finalPrice > 0) {
+        //        saleItemsSummary += `
+        //            <tr>
+        //                <td>${itemName}</td>
+        //                <td>${quantitySold}  ${unit}</td>
+        //                <td>${pricePerUnit.toFixed(2)} ${currency}</td>
+        //                <td>${finalPrice.toFixed(2)} ${currency}</td>
+        //            </tr>
+        //        `;
+        //        totalPrice += finalPrice;
+
+        //            totalItems += 1;
+
+        //        saleItems.push({
+        //            SweetItemId: sweetItemId,
+        //            QuantitySold: quantitySold,
+        //            SalePrice: pricePerUnit,
+        //            FinalPrice: finalPrice,
+        //            Discount: $('#discount').val() || 0,
+        //            Unit: unit,
+        //            Currency: currency
+        //        });
+        //    }
+            //});
+
+            // Reset row error class (if previously set)
+            $row.removeClass('has-error');
+
+            if (quantitySold <= 0) {
+                $row.addClass('has-error'); 
+                isValid = false;
+                return;
             }
+            if (pricePerUnit <= 0) {
+                $row.addClass('has-error');
+                isValid = false;
+                return;
+            }
+            if (finalPrice <= 0) {
+                $row.addClass('has-error');
+                isValid = false;
+                return;
+            }
+            saleItemsSummary += `
+        <tr>
+          <td>${itemName}</td>
+          <td>${quantitySold} ${unit}</td>
+          <td>${pricePerUnit.toFixed(2)} ${currency}</td>
+          <td>${finalPrice.toFixed(2)} ${currency}</td>
+        </tr>
+      `;
+            totalPrice += finalPrice;
+            totalItems += 1;
+
+            saleItems.push({
+                SweetItemId: sweetItemId,
+                QuantitySold: quantitySold,
+                SalePrice: pricePerUnit,
+                FinalPrice: finalPrice,
+                Discount: $('#discount').val() || 0,
+                Unit: unit,
+                Currency: currency
+            });
         });
 
         const discount = parseFloat($('#discount').val()) || 0;
         const discountedPrice = totalPrice - (totalPrice * (discount / 100));
+        if (!isValid) {
+            event.preventDefault();
+            alert('Please correct invalid entries (quantity, price, final price) before submitting.');
+            return;
+        }
 
         const receiptContent = `
             <div>

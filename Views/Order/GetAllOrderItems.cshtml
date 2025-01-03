@@ -22,8 +22,8 @@
                 <td>@item.SalePrice @item.Currency</td>
                 <td>@item.FinalPrice @item.Currency</td>
             </tr>
-        }
-    </tbody>
+        } 
+      </tbody>
     </table>
    <div>
         <button class="btn btn-info" onclick="window.location.href='@Url.Action("GetAllOrders", "Order")'">Back To List</button>
@@ -31,9 +31,9 @@
 </div>
 
 @section Scripts{
-    <script>
+   <script>
          $(document).ready(function () {
           $('#ordersItem').DataTable();
         });
-    </script>
+    </script> 
 }

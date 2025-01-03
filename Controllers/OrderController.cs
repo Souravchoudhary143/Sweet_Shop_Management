@@ -70,7 +70,8 @@ namespace Sweet_Shop_Management.Controllers
                         Unit = item.Unit ?? "Unit",
                         Currency = item.Currency ?? "INR"
                     }).ToList();
-                return View(orders);
+               // return Json(new { data = orders });
+              return View(orders);
             }
             catch(Exception ex)
             {

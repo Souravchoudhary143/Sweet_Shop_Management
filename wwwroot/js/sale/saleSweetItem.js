@@ -82,7 +82,7 @@
         `);
 
         $tableBody.append($row);
-        $selectedItemsTable.removeClass('d-none'); // Show table if hidden
+        $selectedItemsTable.removeClass('d-none');
 
         // Fetch cost price
         $.ajax({
@@ -102,11 +102,16 @@
             const $row = $(this).closest("tr");
             const sweetItemId = $row.data('id');
             $row.remove();
+            const $dropdown = $('#sweetItemDropdown');
             const $option = $sweetItemDropdown.find(`option[value="${sweetItemId}"]`);
-            $option.prop("disabled", false);
-            $option.prop("selected", false);
+            if ($option.length > 0) {
+                $option.prop("disabled", false);
+            }
+            if ($dropdown.val() === String(sweetItemId)) {
+                $dropdown.val('');
+            }
+            $dropdown.trigger('change');
             updateTotalFinalPrice();
-
             if ($tableBody.children('tr').length === 0) {
                 $selectedItemsTable.addClass('d-none');
             }
